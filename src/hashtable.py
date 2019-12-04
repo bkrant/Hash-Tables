@@ -1,3 +1,5 @@
+import hashlib
+import bcrypt
 # '''
 # Linked List hash table key/value pair
 # '''
@@ -15,7 +17,7 @@ class HashTable:
     def __init__(self, capacity):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
-
+        self.count = 0
 
     def _hash(self, key):
         '''
@@ -48,22 +50,25 @@ class HashTable:
         Store the value with the given key.
 
         Hash collisions should be handled with Linked List Chaining.
-
-        Fill this in.
         '''
-        pass
-
+        index = self._hash_mod(key)
+        self.count += 1
+        node = self.storage[index]
+        if node is None:
+            self.storage[index] = LinkedPair(key, value)
+            return
+        while node.next:
+            node = node.next
+        node.next = LinkedPair(key, value)
 
 
     def remove(self, key):
         '''
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
-        Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        node = self.storage[index]
 
 
     def retrieve(self, key):
@@ -71,10 +76,15 @@ class HashTable:
         Retrieve the value stored with the given key.
 
         Returns None if the key is not found.
-
-        Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        node = self.storage[index]
+        while node is not None:
+            if node.key == key:
+                return node.value
+            node = node.next
+
+        return None            
 
 
     def resize(self):
